@@ -7,15 +7,14 @@ import logging
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-# Función para ejecutar en segundo plano después de enviar la respuesta
-def download_task(url: str):
+def download_task(url: str, output_format: str): # La función de fondo ahora acepta el formato
     try:
-        # Aquí ejecutamos la lógica de descarga real
-        result = asyncio.run(download_youtube_video(url))
+        # Pasa el formato a la función del servicio
+        result = asyncio.run(download_youtube_video(url, output_format)) 
         logger.info(f"Descarga completada para '{result['title']}' en {result['filepath']}")
     except Exception as e:
-        logger.error(f"Error durante la descarga de {url}: {e}")
-        # En una API real, aquí notificarías al usuario o registrarías el error
+        logger.error(f"Error durante la descarga de {url} en formato {output_format}: {e}")
+        # Manejo de errores
 
 @router.post("/download", response_model=DownloadResponse)
 async def start_download(
@@ -23,18 +22,17 @@ async def start_download(
     background_tasks: BackgroundTasks
 ):
     """
-    Inicia la descarga de un video de YouTube en segundo plano.
-    La API responde inmediatamente.
+    Inicia la descarga de un video de YouTube en el formato especificado en segundo plano.
     """
-    # NOTA: La descarga de videos puede tomar mucho tiempo y es una tarea
-    # de larga duración. Usar BackgroundTasks permite a la API responder 
-    # inmediatamente al cliente (HTTP 200) mientras la tarea se ejecuta.
+    # Se extraen los dos campos de la solicitud
+    url = request.url
+    output_format = request.output_format 
 
-    # Agrega la tarea de descarga a las tareas de fondo de FastAPI
-    background_tasks.add_task(download_task, request.url)
+    # Se agregan los dos parámetros a la tarea de fondo
+    background_tasks.add_task(download_task, url, output_format)
     
     return DownloadResponse(
-        message=f"Descarga iniciada para la URL: {request.url}. El proceso se ejecutará en segundo plano.",
+        message=f"Descarga en formato '{output_format}' iniciada para la URL: {url}. El proceso se ejecutará en segundo plano.",
         title="N/A (La descarga se está procesando)",
         filepath="N/A (La descarga se está procesando)"
     )
