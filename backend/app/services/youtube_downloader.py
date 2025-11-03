@@ -9,7 +9,7 @@ AllowedFormat = Literal["mp4", "mp3"]
 DOWNLOAD_DIR = os.path.join(os.getcwd(), "downloads")
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
-async def download_youtube_video(url: str, output_format: AllowedFormat) -> dict:
+async def download_media_content(url: str, output_format: AllowedFormat) -> dict:
 
     def blocking_download():
         if output_format == "mp3":

@@ -3,9 +3,9 @@ from app.routes import download
 
 # 1. Creación de la instancia de la aplicación
 app = FastAPI(
-    title="YouTube Downloader API",
-    description="API usando FastAPI y yt-dlp para iniciar descargas de YouTube.",
-    version="2025.1"
+    title="Universal Media Downloader API (Soporta YouTube, X, Instagram, etc.)",
+    description="API usando FastAPI y yt-dlp para iniciar descargas de contenido multimedia de múltiples plataformas.",
+    version="2025.2"
 )
 
 # 2. Inclusión de las rutas

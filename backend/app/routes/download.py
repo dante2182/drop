@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 from app.models.downloader import DownloadRequest, DownloadResponse
-from app.services.youtube_downloader import download_youtube_video
+from app.services.youtube_downloader import download_media_content
 import asyncio
 import logging
 
@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 def download_task(url: str, output_format: str): # La función de fondo ahora acepta el formato
     try:
         # Pasa el formato a la función del servicio
-        result = asyncio.run(download_youtube_video(url, output_format)) 
+        result = asyncio.run(download_media_content(url, output_format)) 
         logger.info(f"Descarga completada para '{result['title']}' en {result['filepath']}")
     except Exception as e:
         logger.error(f"Error durante la descarga de {url} en formato {output_format}: {e}")
