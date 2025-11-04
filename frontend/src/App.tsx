@@ -1,11 +1,11 @@
+import DownloadPage from './components/dowload/page'
+
 function App() {
   return (
-    <>
-      <div>
-        <h1 className="text-3xl font-bold">Drop</h1>
-      </div>
-    </>
-  );
+    <div className="py-32">
+      <DownloadPage />
+    </div>
+  )
 }
 
-export default App;
+export default App
