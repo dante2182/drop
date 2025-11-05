@@ -1,21 +1,30 @@
 import asyncio
 from yt_dlp import YoutubeDL
 import os
-from typing import Literal
+from typing import Literal, Optional
+import tempfile
 
 AllowedFormat = Literal["mp4", "mp3"]
 
-# Directorio donde se guardarán los videos
-DOWNLOAD_DIR = os.path.join(os.getcwd(), "downloads")
-os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+# Directorio por defecto donde se guardarán los videos si no se especifica otro
+DEFAULT_DOWNLOAD_DIR = os.path.join(os.getcwd(), "downloads")
+os.makedirs(DEFAULT_DOWNLOAD_DIR, exist_ok=True)
 
-async def download_media_content(url: str, output_format: AllowedFormat) -> dict:
+async def download_media_content(url: str, output_format: AllowedFormat, output_dir: Optional[str] = None) -> dict:
+    """
+    Descarga contenido multimedia en el formato solicitado y retorna metadatos.
+
+    - Si se proporciona `output_dir`, los archivos se guardan allí (p. ej., directorios temporales por solicitud).
+    - Si no se proporciona, se usa el directorio por defecto del servidor.
+    """
 
     def blocking_download():
+        target_dir = output_dir or DEFAULT_DOWNLOAD_DIR
+        os.makedirs(target_dir, exist_ok=True)
         if output_format == "mp3":
             ydl_opts = {
                 'format': 'bestaudio/best',
-                'outtmpl': os.path.join(DOWNLOAD_DIR, '%(title)s.%(ext)s'),
+                'outtmpl': os.path.join(target_dir, '%(title)s.%(ext)s'),
                 'noplaylist': True,
                 'postprocessors': [{
                     'key': 'FFmpegExtractAudio',
@@ -28,7 +37,7 @@ async def download_media_content(url: str, output_format: AllowedFormat) -> dict
         else:
             ydl_opts = {
                 'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4',
-                'outtmpl': os.path.join(DOWNLOAD_DIR, '%(title)s.%(ext)s'),
+                'outtmpl': os.path.join(target_dir, '%(title)s.%(ext)s'),
                 'merge_output_format': 'mp4',
                 'noplaylist': True,
                 'force_overwrites': True,
@@ -41,7 +50,7 @@ async def download_media_content(url: str, output_format: AllowedFormat) -> dict
             
             ydl.download([url])
             
-            filepath = os.path.join(DOWNLOAD_DIR, f"{video_title}.{ext}")
+            filepath = os.path.join(target_dir, f"{video_title}.{ext}")
             
             return {"title": video_title, "filepath": filepath}
 

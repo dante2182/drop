@@ -3,7 +3,7 @@ import { Input } from '../ui/input'
 import SelectFormat from './selectFormat'
 import CardFile from './cardFile'
 import { useState } from 'react'
-import { downloadMedia } from '@/api/download'
+import { downloadMediaFile } from '@/api/download'
 
 export default function DownloadPage() {
   const [url, setUrl] = useState('')
@@ -11,7 +11,13 @@ export default function DownloadPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [downloads, setDownloads] = useState<
-    Array<{ id: number; name: string; url: string; format: string; status: string }>
+    Array<{
+      id: number
+      name: string
+      url: string
+      format: string
+      status: string
+    }>
   >([])
   const [success, setSuccess] = useState<string | null>(null)
 
@@ -26,21 +32,19 @@ export default function DownloadPage() {
     setSuccess(null)
 
     try {
-      const response = await downloadMedia(url, format)
-      
-      // Agregar a la lista de descargas
+      const { filename } = await downloadMediaFile(url, format)
+
+      // Agregar a la lista de descargas con el nombre final
       const newDownload = {
         id: Date.now(),
-        name: response.title !== 'N/A (La descarga se está procesando)' 
-          ? response.title 
-          : 'Procesando...',
+        name: filename,
         url: url,
         format: format,
-        status: 'Descargando en segundo plano'
+        status: 'Descargado',
       }
-      
-      setDownloads(prev => [newDownload, ...prev])
-      setSuccess(response.message)
+
+      setDownloads((prev) => [newDownload, ...prev])
+      setSuccess(`Descarga completada: ${filename}`)
       setUrl('') // Limpiar el input
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al descargar')
@@ -69,8 +73,8 @@ export default function DownloadPage() {
           />
           <SelectFormat value={format} onValueChange={setFormat} />
         </div>
-        
-        <Button 
+
+        <Button
           className="self-start px-6 py-3 rounded-lg shadow"
           onClick={handleDownload}
           disabled={loading || !url.trim()}
@@ -86,7 +90,9 @@ export default function DownloadPage() {
 
         {success && (
           <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-            <p className="text-sm text-green-600 dark:text-green-400">{success}</p>
+            <p className="text-sm text-green-600 dark:text-green-400">
+              {success}
+            </p>
           </div>
         )}
 

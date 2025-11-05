@@ -31,7 +31,9 @@ export const downloadMedia = async (
     if (error.response) {
       // Error de respuesta del servidor
       throw new Error(
-        error.response.data?.detail || error.response.data?.message || 'Error al iniciar la descarga'
+        error.response.data?.detail ||
+          error.response.data?.message ||
+          'Error al iniciar la descarga'
       )
     } else if (error.request) {
       // Error de red
@@ -39,6 +41,68 @@ export const downloadMedia = async (
     } else {
       // Otro tipo de error
       throw new Error(error.message || 'Error al iniciar la descarga')
+    }
+  }
+}
+
+/**
+ * Descarga el archivo directamente y fuerza la descarga en el dispositivo del usuario.
+ * Devuelve el nombre de archivo utilizado para la descarga.
+ */
+export const downloadMediaFile = async (
+  url: string,
+  format: 'mp4' | 'mp3'
+): Promise<{ filename: string }> => {
+  try {
+    const response = await axios.post(
+      '/download/file',
+      { url, output_format: format },
+      {
+        responseType: 'blob',
+      }
+    )
+
+    const disposition: string | undefined =
+      response.headers['content-disposition']
+    let filename = `download.${format}`
+    if (disposition) {
+      // RFC 5987 support: filename*=UTF-8''<urlencoded>
+      const extMatch = /filename\*=([^']+)''([^;]+)/i.exec(disposition)
+      if (extMatch && extMatch[2]) {
+        try {
+          filename = decodeURIComponent(extMatch[2])
+        } catch {
+          filename = extMatch[2]
+        }
+      } else {
+        const match = /filename="?([^";]+)"?/i.exec(disposition)
+        if (match && match[1]) {
+          filename = match[1]
+        }
+      }
+    }
+
+    const blobUrl = window.URL.createObjectURL(response.data)
+    const a = document.createElement('a')
+    a.href = blobUrl
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    window.URL.revokeObjectURL(blobUrl)
+
+    return { filename }
+  } catch (error: any) {
+    if (error.response) {
+      throw new Error(
+        error.response.data?.detail ||
+          error.response.data?.message ||
+          'Error al descargar el archivo'
+      )
+    } else if (error.request) {
+      throw new Error('No se pudo conectar con el servidor')
+    } else {
+      throw new Error(error.message || 'Error al descargar el archivo')
     }
   }
 }
