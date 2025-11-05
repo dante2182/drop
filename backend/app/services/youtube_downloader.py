@@ -47,12 +47,16 @@ async def download_media_content(url: str, output_format: AllowedFormat, output_
 
             info = ydl.extract_info(url, download=False)
             video_title = info.get('title', 'video_sin_titulo')
+            # Sanitizar el título para que sea un nombre de archivo válido
+            sanitized_title = "".join(c for c in video_title if c.isalnum() or c in (' ', '.', '_')).rstrip()
+            ydl_opts['outtmpl'] = os.path.join(target_dir, f'{sanitized_title}.%(ext)s')
             
-            ydl.download([url])
+            with YoutubeDL(ydl_opts) as ydl:
+                ydl.download([url])
             
-            filepath = os.path.join(target_dir, f"{video_title}.{ext}")
+            filepath = os.path.join(target_dir, f"{sanitized_title}.{ext}")
             
-            return {"title": video_title, "filepath": filepath}
+            return {"title": sanitized_title, "filepath": filepath}
 
     loop = asyncio.get_event_loop()
     result = await loop.run_in_executor(None, blocking_download)
