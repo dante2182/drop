@@ -1,23 +1,19 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import download
+from app.config import settings
 
 # 1. Creación de la instancia de la aplicación
 app = FastAPI(
     title="Universal Media Downloader API (Soporta YouTube, X, Instagram, etc.)",
     description="API usando FastAPI y yt-dlp para iniciar descargas de contenido multimedia de múltiples plataformas.",
-    version="2025.2"
+    version=settings.api_version,
 )
 
 # Allow client side to access the API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",  # Vite dev server
-        "http://localhost:3000",   # Production server
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:3000",
-    ],
+    allow_origins=settings.allowed_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

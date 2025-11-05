@@ -3,11 +3,12 @@ from yt_dlp import YoutubeDL
 import os
 from typing import Literal, Optional
 import tempfile
+from app.config import settings
 
 AllowedFormat = Literal["mp4", "mp3"]
 
 # Directorio por defecto donde se guardarán los videos si no se especifica otro
-DEFAULT_DOWNLOAD_DIR = os.path.join(os.getcwd(), "downloads")
+DEFAULT_DOWNLOAD_DIR = settings.download_dir # <-- Usar variable de entorno
 os.makedirs(DEFAULT_DOWNLOAD_DIR, exist_ok=True)
 
 async def download_media_content(url: str, output_format: AllowedFormat, output_dir: Optional[str] = None) -> dict:
@@ -25,12 +26,18 @@ async def download_media_content(url: str, output_format: AllowedFormat, output_
             ydl_opts = {
                 'format': 'bestaudio/best',
                 'outtmpl': os.path.join(target_dir, '%(title)s.%(ext)s'),
+                'writethumbnail': True,  # Indicar que se descargue la portada
                 'noplaylist': True,
-                'postprocessors': [{
-                    'key': 'FFmpegExtractAudio',
-                    'preferredcodec': 'mp3',
-                    'preferredquality': '192', # Calidad de audio
-                }],
+                'postprocessors': [
+                    {
+                        'key': 'FFmpegExtractAudio',
+                        'preferredcodec': 'mp3',
+                        'preferredquality': '192', # Calidad de audio
+                    },
+                    {
+                        'key': 'EmbedThumbnail', # Incrustar la portada en el archivo de audio
+                    }
+                ],
                 'force_overwrites': True,
             }
             ext = 'mp3'

@@ -6,3 +6,6 @@ downloads/
 
 # Python cache
 __pycache__/
+
+# Environment variables
+.env
