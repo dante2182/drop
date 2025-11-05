@@ -6,9 +6,14 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-export default function SelectFormat() {
+interface SelectFormatProps {
+  value: 'mp4' | 'mp3'
+  onValueChange: (value: 'mp4' | 'mp3') => void
+}
+
+export default function SelectFormat({ value, onValueChange }: SelectFormatProps) {
   return (
-    <Select>
+    <Select value={value} onValueChange={onValueChange}>
       <SelectTrigger className="w-[100px]">
         <SelectValue placeholder="Format" />
       </SelectTrigger>
