@@ -1,14 +1,12 @@
-export default function footer() {
+export default function Footer() {
   return (
-    <div className="container max-w-4xl flex-1 flex flex-col items-center mx-auto my-10">
-      <div className="flex justify-between w-full">
-        <p>⭐ Simple designs. Stunning results</p>
-        <div className="flex gap-2 items-center">
-          <h2>Dante Rodríguez</h2>
-          <span>-</span>
-          <p>{new Date().getFullYear()}</p>
-        </div>
+    <footer className="border-t mt-12 py-6">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+        <p>
+          ⭐ Simple designs. Stunning results | Dante Rodríguez -{' '}
+          {new Date().getFullYear()}
+        </p>
       </div>
-    </div>
+    </footer>
   )
 }
