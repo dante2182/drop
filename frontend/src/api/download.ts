@@ -27,12 +27,18 @@ export const downloadMedia = async (
       output_format: format,
     })
     return response.data
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
+  } catch (error: any) {
+    if (error.response) {
+      // Error de respuesta del servidor
       throw new Error(
-        error.response?.data?.detail || 'Error al iniciar la descarga'
+        error.response.data?.detail || error.response.data?.message || 'Error al iniciar la descarga'
       )
+    } else if (error.request) {
+      // Error de red
+      throw new Error('No se pudo conectar con el servidor')
+    } else {
+      // Otro tipo de error
+      throw new Error(error.message || 'Error al iniciar la descarga')
     }
-    throw error
   }
 }
