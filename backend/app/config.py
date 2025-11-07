@@ -7,10 +7,7 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
     )
 
-    allowed_origins_list: List[str] = [ 
-        "http://localhost:5173", 
-        "http://localhost:3000"
-    ]
+    allowed_origins_list: str
 
     download_dir: str = "downloads"
 
