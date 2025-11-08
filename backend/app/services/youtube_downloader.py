@@ -20,7 +20,7 @@ def get_base_ydl_opts(target_dir: str) -> dict:
     Configuración base optimizada para evitar detección de bots por YouTube.
     Esta configuración es crítica para descargas en producción.
     """
-    return {
+    opts = {
         'outtmpl': os.path.join(target_dir, '%(title)s.%(ext)s'),
         'noplaylist': True,
         'force_overwrites': True,
@@ -45,8 +45,8 @@ def get_base_ydl_opts(target_dir: str) -> dict:
         # Configuración de extractor para YouTube
         'extractor_args': {
             'youtube': {
-                'player_client': ['android', 'web'],  # Usar múltiples clientes
-                'player_skip': ['webpage', 'configs'],  # Optimización
+                'player_client': ['android', 'web', 'ios'],  # Usar múltiples clientes
+                'player_skip': ['webpage'],  # Optimización
             }
         },
         
@@ -65,6 +65,28 @@ def get_base_ydl_opts(target_dir: str) -> dict:
         'geo_bypass': True,
         'geo_bypass_country': 'US',
     }
+    
+    # === CONFIGURACIÓN DE COOKIES (CRÍTICO PARA EVITAR BOT DETECTION) ===
+    # Si se especifica un archivo de cookies, úsalo
+    if settings.youtube_cookies_file and os.path.exists(settings.youtube_cookies_file):
+        opts['cookiefile'] = settings.youtube_cookies_file
+        logger.info(f"Usando archivo de cookies: {settings.youtube_cookies_file}")
+    # Si se especifica un navegador, extrae cookies automáticamente
+    elif settings.youtube_cookies_browser:
+        opts['cookiesfrombrowser'] = (settings.youtube_cookies_browser,)
+        logger.info(f"Extrayendo cookies del navegador: {settings.youtube_cookies_browser}")
+    else:
+        # SOLUCIÓN PARA RENDER/PRODUCCIÓN: Intentar extraer cookies de Chrome/Chromium
+        # Esto puede funcionar si Chromium está instalado en el servidor
+        try:
+            # Intentar con Chromium primero (común en servidores Linux)
+            opts['cookiesfrombrowser'] = ('chromium',)
+            logger.info("Intentando extraer cookies de Chromium (producción)")
+        except Exception as e:
+            logger.warning(f"No se pudieron cargar cookies automáticas: {e}")
+            logger.warning("Para mejor funcionamiento, configura YOUTUBE_COOKIES_BROWSER o YOUTUBE_COOKIES_FILE")
+    
+    return opts
 
 async def download_media_content(url: str, output_format: AllowedFormat, output_dir: Optional[str] = None) -> dict:
     """
