@@ -32,6 +32,41 @@ Se han implementado las siguientes técnicas en `youtube_downloader.py`:
 
 ## 🚀 Configuración para Render
 
+### SOLUCIÓN PRINCIPAL: Usar Cookies de YouTube
+
+La forma más efectiva de resolver el bot detection es usar cookies de una sesión real de YouTube:
+
+#### Método 1: Archivo de Cookies (RECOMENDADO)
+
+**En tu computadora local:**
+
+```bash
+# 1. Asegúrate de estar logueado en YouTube en tu navegador
+# 2. Exporta las cookies
+cd backend
+python export_cookies.py chrome  # o firefox, edge, etc.
+
+# Esto genera: youtube_cookies.txt
+```
+
+**En Render:**
+
+1. Sube el archivo `youtube_cookies.txt` a tu repositorio (NO lo agregues a .gitignore para deploy)
+2. O súbelo manualmente vía Render Shell: `cat > youtube_cookies.txt` y pega el contenido
+3. Configura la variable de entorno:
+   ```bash
+   YOUTUBE_COOKIES_FILE=/opt/render/project/src/backend/youtube_cookies.txt
+   ```
+
+#### Método 2: Extracción Automática de Cookies
+
+Si tu servidor tiene un navegador instalado (algunos servicios lo incluyen):
+
+```bash
+# Variable de entorno en Render
+YOUTUBE_COOKIES_BROWSER=chromium
+```
+
 ### Variables de Entorno Requeridas
 
 En tu servicio de Render, configura estas variables de entorno:
