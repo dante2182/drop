@@ -1,7 +1,8 @@
-fastapi 
-uvicorn 
-yt-dlp>=2025.2.13
-pydantic
-python-dotenv
-pydantic-settings
-browser-cookie3
+browser-cookie3==0.20.1
+fastapi==0.121.0
+pydantic==2.12.4
+pydantic-settings==2.11.0
+pydantic_core==2.41.5
+python-dotenv==1.2.1
+uvicorn==0.38.0
+yt-dlp==2025.10.22
