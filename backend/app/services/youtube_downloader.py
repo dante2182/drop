@@ -76,15 +76,8 @@ def get_base_ydl_opts(target_dir: str) -> dict:
         opts['cookiesfrombrowser'] = (settings.youtube_cookies_browser,)
         logger.info(f"Extrayendo cookies del navegador: {settings.youtube_cookies_browser}")
     else:
-        # SOLUCIÓN PARA RENDER/PRODUCCIÓN: Intentar extraer cookies de Chrome/Chromium
-        # Esto puede funcionar si Chromium está instalado en el servidor
-        try:
-            # Intentar con Chromium primero (común en servidores Linux)
-            opts['cookiesfrombrowser'] = ('chromium',)
-            logger.info("Intentando extraer cookies de Chromium (producción)")
-        except Exception as e:
-            logger.warning(f"No se pudieron cargar cookies automáticas: {e}")
-            logger.warning("Para mejor funcionamiento, configura YOUTUBE_COOKIES_BROWSER o YOUTUBE_COOKIES_FILE")
+        logger.info("Sin cookies configuradas - usando solo headers anti-bot")
+        logger.warning("Para mejor funcionamiento en producción, configura YOUTUBE_COOKIES_FILE")
     
     return opts
 
