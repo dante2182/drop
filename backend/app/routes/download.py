@@ -9,7 +9,7 @@ import tempfile
 import shutil
 import os
 
-router = APIRouter()
+router = APIRouter(prefix="/api")
 logger = logging.getLogger(__name__)
 
 def download_task(url: str, output_format: str): # La función de fondo ahora acepta el formato
