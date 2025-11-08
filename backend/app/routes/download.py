@@ -72,5 +72,23 @@ async def download_file(request: DownloadRequest):
             headers=headers
         )
     except Exception as e:
-        logging.exception("Error al realizar descarga directa")
-        raise HTTPException(status_code=500, detail=f"Error al descargar el archivo: {str(e)}")
+        # Limpiar el directorio temporal en caso de error
+        if 'tmpdir' in locals():
+            shutil.rmtree(tmpdir, ignore_errors=True)
+        
+        error_msg = str(e)
+        logger.exception("Error al realizar descarga directa")
+        
+        # Mensajes de error más específicos según el tipo de problema
+        if "Sign in to confirm" in error_msg or "bot" in error_msg.lower():
+            detail = "YouTube ha detectado tráfico automatizado. Por favor intenta nuevamente en unos minutos o prueba con otro video."
+        elif "Video unavailable" in error_msg:
+            detail = "El video no está disponible. Puede estar restringido geográficamente o eliminado."
+        elif "Private video" in error_msg:
+            detail = "El video es privado y no puede ser descargado."
+        elif "This live stream" in error_msg:
+            detail = "No se pueden descargar transmisiones en vivo activas. Espera a que termine."
+        else:
+            detail = f"Error al descargar el archivo: {error_msg}"
+        
+        raise HTTPException(status_code=500, detail=detail)
