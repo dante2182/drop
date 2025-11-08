@@ -1,6 +1,7 @@
 fastapi 
 uvicorn 
-yt-dlp 
+yt-dlp>=2025.2.13
 pydantic
 python-dotenv
 pydantic-settings
+browser-cookie3
