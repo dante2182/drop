@@ -13,14 +13,12 @@ class Settings(BaseSettings):
 
     api_version: str = "2025.2"
     
-    # Opcional: ruta a archivo de cookies para evitar bot detection de YouTube
-    # Genera cookies desde tu navegador usando: 
-    # chrome -> yt-dlp --cookies-from-browser chrome
-    # firefox -> yt-dlp --cookies-from-browser firefox  
-    youtube_cookies_file: Optional[str] = None
+    # Opcional: Ruta a un archivo de cookies para evitar bloqueos de sitios
+    # como YouTube, Facebook, Instagram, etc.
+    # Genera este archivo con: python export_cookies.py --all
+    cookies_file: Optional[str] = None
     
     # Opcional: browser para extraer cookies automáticamente
     # Opciones: 'chrome', 'firefox', 'edge', 'safari', 'chromium', 'brave', 'opera'
-    youtube_cookies_browser: Optional[str] = None
-
+    
 settings = Settings()

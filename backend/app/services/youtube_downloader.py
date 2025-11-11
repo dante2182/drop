@@ -67,17 +67,13 @@ def get_base_ydl_opts(target_dir: str) -> dict:
     }
     
     # === CONFIGURACIÓN DE COOKIES (CRÍTICO PARA EVITAR BOT DETECTION) ===
-    # Si se especifica un archivo de cookies, úsalo
-    if settings.youtube_cookies_file and os.path.exists(settings.youtube_cookies_file):
-        opts['cookiefile'] = settings.youtube_cookies_file
-        logger.info(f"Usando archivo de cookies: {settings.youtube_cookies_file}")
-    # Si se especifica un navegador, extrae cookies automáticamente
-    elif settings.youtube_cookies_browser:
-        opts['cookiesfrombrowser'] = (settings.youtube_cookies_browser,)
-        logger.info(f"Extrayendo cookies del navegador: {settings.youtube_cookies_browser}")
+    # Si se especifica un archivo de cookies, úsalo. Es vital para Facebook, Instagram, etc.
+    if settings.cookies_file and os.path.exists(settings.cookies_file):
+        opts['cookiefile'] = settings.cookies_file
+        logger.info(f"Usando archivo de cookies global: {settings.cookies_file}")
     else:
-        logger.info("Sin cookies configuradas - usando solo headers anti-bot")
-        logger.warning("Para mejor funcionamiento en producción, configura YOUTUBE_COOKIES_FILE")
+        logger.info("No se ha configurado un archivo de cookies.")
+        logger.warning("La descarga desde sitios como Facebook o Instagram probablemente fallará.")
     
     return opts
 
